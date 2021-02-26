@@ -1,0 +1,129 @@
+﻿@model Ikea.Models.ViewModels.InventoriesViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="row">
+    <div class="col-4">
+        <h1>Employees</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Employee)
+                {
+                    string selectedRow = "";
+                    if (item.Id == (int?)ViewData["EmployeeId"])
+                    {
+                        selectedRow = "success";
+                    }
+                    <tr class="@selectedRow">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            <a asp-action="GetInventory" asp-route-id="@item.Id" asp-route-filter="0">Select</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-4">
+        <h1>Departments</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Departments)
+                {
+                    string selectedRow = "";
+                    if (item == (int?)ViewData["EmployeeId"])
+                    {
+                        selectedRow = "success";
+                    }
+                    <tr class="@selectedRow">
+                        <td>
+                            @Html.DisplayFor(modelItem => item)
+                        </td>
+                        <td>
+                            <a asp-action="GetInventory" asp-route-id="@item" asp-route-filter="1">Select</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-4">
+        <h1>BusinessUnit</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.BusinessUnits)
+                {
+                    string selectedRow = "";
+                    if (item == (int?)ViewData["EmployeeId"])
+                    {
+                        selectedRow = "success";
+                    }
+                    <tr class="@selectedRow">
+                        <td>
+                            @Html.DisplayFor(modelItem => item)
+                        </td>
+                        <td>
+                            <a asp-action="GetInventory" asp-route-id="@item" asp-route-filter="2">Select</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+@if (Model.Furnitures != null)
+{
+    <h3>Furnitures</h3>
+    <table class="table">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+        </tr>
+
+        @foreach (var item in Model.Furnitures)
+        {
+            <tr>
+                <td>
+                    @item.Id
+                </td>
+                <td>
+                    @item.Name
+                </td>
+            </tr>
+        }
+
+    </table>
+
+    <a asp-action="ExportInventoryExcel" asp-route-id="@Model.Id" asp-route-filter="@Model.FilterType">Export Excel Report</a>
+}
