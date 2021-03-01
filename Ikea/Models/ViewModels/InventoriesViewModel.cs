@@ -17,8 +17,8 @@ namespace Ikea.Models.ViewModels
         public int? Id { get; set; }
         public Filter FilterType { get; set; }
         public List<OrganizationalStructure> Employee { get; set; }
-        public List<int?> Departments { get; set; }
-        public List<int?> BusinessUnits { get; set; }
+        public List<OrganizationalStructure> Departments { get; set; }
+        public List<OrganizationalStructure> BusinessUnits { get; set; }
         public List<Furniture> Furnitures { get; set; }
     }
 }

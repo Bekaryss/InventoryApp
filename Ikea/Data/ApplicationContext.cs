@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Ikea.Models.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ikea.Models
 {
@@ -15,6 +16,8 @@ namespace Ikea.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<EmployeeViewModel>().HasNoKey();
+
             modelBuilder.Entity<OrganizationalStructure>()
                 .ToTable("OrganizationalStructure")
                 .HasKey(p => p.Id);

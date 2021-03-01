@@ -7,6 +7,7 @@ namespace Ikea.Models
     public interface IInventoryService
     {
         public Task<InventoriesViewModel> GetFurnituresAsync(int? id, Filter filter);
-        public Task<IEnumerable<OrganizationalStructure>> GetEmployeesAsync();
+        public Task<IEnumerable<EmployeeViewModel>> GetEmployeesAsync();
+        public Task<OrganizationalStructure> GetOrganizationalStructure(int? id);
     }
 }

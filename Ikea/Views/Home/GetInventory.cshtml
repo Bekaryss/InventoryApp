@@ -51,16 +51,16 @@
                 @foreach (var item in Model.Departments)
                 {
                     string selectedRow = "";
-                    if (item == (int?)ViewData["EmployeeId"])
+                    if (item.Id == (int?)ViewData["DepartmentId"])
                     {
                         selectedRow = "success";
                     }
                     <tr class="@selectedRow">
                         <td>
-                            @Html.DisplayFor(modelItem => item)
+                            @Html.DisplayFor(modelItem => item.Name)
                         </td>
                         <td>
-                            <a asp-action="GetInventory" asp-route-id="@item" asp-route-filter="1">Select</a>
+                            <a asp-action="GetInventory" asp-route-id="@item.Id" asp-route-filter="1">Select</a>
                         </td>
                     </tr>
                 }
@@ -82,16 +82,16 @@
                 @foreach (var item in Model.BusinessUnits)
                 {
                     string selectedRow = "";
-                    if (item == (int?)ViewData["EmployeeId"])
+                    if (item.Id == (int?)ViewData["BusinessUnitId"])
                     {
                         selectedRow = "success";
                     }
                     <tr class="@selectedRow">
                         <td>
-                            @Html.DisplayFor(modelItem => item)
+                            @Html.DisplayFor(modelItem => item.Name)
                         </td>
                         <td>
-                            <a asp-action="GetInventory" asp-route-id="@item" asp-route-filter="2">Select</a>
+                            <a asp-action="GetInventory" asp-route-id="@item.Id" asp-route-filter="2">Select</a>
                         </td>
                     </tr>
                 }

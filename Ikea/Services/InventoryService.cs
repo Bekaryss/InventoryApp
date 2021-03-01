@@ -9,36 +9,48 @@ namespace Ikea.Models
     public class InventoryService : IInventoryService
     {
         private readonly ApplicationContext _context;
-        private readonly string getEmployeesFromDb = $"SELECT * FROM OrganizationalStructure";
+        private readonly string getEmployeesFromDb =
+            $"SELECT A.Id, A.Name, " +
+            $"B.Id AS DepartmentId, B.Name AS DepartmentName, " +
+            $"C.Id AS BusinessUnitId, C.Name AS BusinessUnitName " +
+            $"FROM OrganizationalStructure A,  OrganizationalStructure B, OrganizationalStructure C " +
+            $"WHERE A.Department IS NOT NULL " +
+            $"AND A.Department = B.Id " +
+            $"AND B.BusinessUnit IS NOT NULL " +
+            $"AND B.BusinessUnit = C.Id";
 
         public InventoryService(ApplicationContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<OrganizationalStructure>> GetEmployeesAsync()
+        public async Task<IEnumerable<EmployeeViewModel>> GetEmployeesAsync()
         {
-            var viewModel = await _context.OrganizationalStructures
-                .FromSqlRaw(getEmployeesFromDb)
-                .ToListAsync();
+            var viewModel = await _context.Set<EmployeeViewModel>().FromSqlRaw(getEmployeesFromDb).ToListAsync();
+            return viewModel;
+        }
+
+        public async Task<OrganizationalStructure> GetOrganizationalStructure(int? id)
+        {
+            var viewModel = await _context.OrganizationalStructures.Where(p => p.Id == id).FirstOrDefaultAsync();
             return viewModel;
         }
 
         public async Task<InventoriesViewModel> GetFurnituresAsync(int? id, Filter filter)
         {
             var viewModel = new InventoriesViewModel();
+            var organizationalStructures = await _context.OrganizationalStructures.ToArrayAsync();
 
-            viewModel.Employee = await _context.OrganizationalStructures
-                .ToListAsync();
-            viewModel.Departments = viewModel.Employee
+            viewModel.Employee = organizationalStructures
                 .Where(p => p.Department != null)
-                .Select(p => p.Department)
-                .Distinct()
                 .ToList();
-            viewModel.BusinessUnits = viewModel.Employee
+
+            viewModel.Departments = organizationalStructures
                 .Where(p => p.BusinessUnit != null)
-                .Select(p => p.BusinessUnit)
-                .Distinct()
+                .ToList();
+
+            viewModel.BusinessUnits = organizationalStructures
+                .Where(p => p.BusinessUnit == null && p.Department == null)
                 .ToList();
 
             if (id != null)
@@ -64,12 +76,17 @@ namespace Ikea.Models
                 }
                 else
                 {
-                    viewModel.Furnitures = await _context.Inventories
-                        .Include(i => i.Furniture)
-                        .Include(i => i.Employee)
-                        .Where(p => p.Employee.BusinessUnit == id)
-                        .Select(p => p.Furniture)
-                        .ToListAsync();
+                    var furnitures = from inventory in _context.Inventories
+                                     join furniture in _context.Furnitures on inventory.ObjectId equals furniture.Id
+                                     join employee in _context.OrganizationalStructures on inventory.EmployeeId equals employee.Id
+                                     join department in _context.OrganizationalStructures on employee.Department equals department.Id
+                                     where department.BusinessUnit == id
+                                     select new Furniture
+                                     {
+                                         Id = furniture.Id,
+                                         Name = furniture.Name
+                                     };
+                    viewModel.Furnitures = await furnitures.ToListAsync();
                 }
             }
             else

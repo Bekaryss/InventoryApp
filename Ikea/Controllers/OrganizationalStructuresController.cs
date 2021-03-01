@@ -1,8 +1,11 @@
-﻿using Ikea.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Ikea.Models;
 
 namespace Ikea.Controllers
 {
@@ -42,6 +45,8 @@ namespace Ikea.Controllers
         // GET: OrganizationalStructures/Create
         public IActionResult Create()
         {
+            ViewData["Department"] = new SelectList(_context.OrganizationalStructures.Where(p => p.BusinessUnit != null), "Id", "Name");
+            ViewData["BusinessUnit"] = new SelectList(_context.OrganizationalStructures.Where(p => p.Department == null && p.BusinessUnit == null), "Id", "Name");
             return View();
         }
 
@@ -68,7 +73,8 @@ namespace Ikea.Controllers
             {
                 return NotFound();
             }
-
+            ViewData["Department"] = new SelectList(_context.OrganizationalStructures.Where(p => p.BusinessUnit != null), "Id", "Name");
+            ViewData["BusinessUnit"] = new SelectList(_context.OrganizationalStructures.Where(p => p.Department == null && p.BusinessUnit == null), "Id", "Name");
             var organizationalStructure = await _context.OrganizationalStructures.FindAsync(id);
             if (organizationalStructure == null)
             {
